@@ -4,6 +4,17 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 # ===================== CONFIG ===================== #
+def init_params():
+    # Initialize the weights ("opinions") for the first layer of artificial neurons. The formula for the first layer of neurons will be Z = W * A + B
+    # In this scenario, W must be 10 x 784 (since 10 was chosen as the number of neurons in the hidden layer) cause A = 784 x 1000 
+    W1 = np.random.rand(10, 784) - 0.5
+    b1 = np.random.rand(10, 1) - 0.5
+
+    # Initialize the weights and bias for the seceond layer of artificial neurons
+    W2 = np.random.rand(10, 10) - 0.5
+    b2 = np.random.rand(10, 1) - 0.5
+    
+    return W1, b1, W2, b2
 
 data = pd.read_csv('mnist_data/train.csv')
 
@@ -23,3 +34,5 @@ X_dev = data_dev[1:n]
 data_train = data[1000:m].T
 Y_train = data_train[0]
 X_train = data_train[1:n]
+
+init_params()
