@@ -31,6 +31,15 @@ def forward_propagation(W1, b1, W2, b2, X):
 
     return Z1, A1, Z2, A2
 
+def one_hot(Y):
+    one_hot_Y = np.zeros((Y.size, Y.max() + 1)) # Create an m x 10 matrix. 
+    one_hot_Y[np.arange(Y.size), Y] = 1 # For every row i, mark the j'th column with a 1 if Y[i] = j
+    one_hot_Y = one_hot_Y.T # Flip the matrix
+    return one_hot_Y
+
+def backward_propagation(Z1, A1, Z2, A2, W2, Y):
+    return "To be implemented"
+      
 data = pd.read_csv('mnist_data/train.csv')
 
 # Convert panda dataframe to numpy array
