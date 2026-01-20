@@ -61,6 +61,16 @@ def backward_propagation(Z1, A1, Z2, A2, W2, X, Y):
 
 
     return dW1, db1, dW2, db2
+
+def update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, learning_rate):
+    W1 = W1 - learning_rate * dW1
+    b1 = b1 - learning_rate * db1
+    W2 = W2 - learning_rate * dW2
+    b2 = b2 - learning_rate * db2
+
+    return W1, b1, W2, b2
+
+
       
 data = pd.read_csv('mnist_data/train.csv')
 
