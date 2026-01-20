@@ -115,3 +115,6 @@ X_dev = data_dev[1:n]
 data_train = data[1000:m].T
 Y_train = data_train[0]
 X_train = data_train[1:n]
+
+# Start gradient descent
+W1, b1, W2, b2 = gradient_descent(X_train, Y_train, 100, 0.1)
