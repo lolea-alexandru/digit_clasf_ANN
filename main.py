@@ -19,6 +19,9 @@ def init_params():
 def ReLU(Z):
     return np.maximum(0, Z)
 
+def deriv_ReLU(Z):
+    return Z > 0
+
 def softmax(Z):
     return np.exp(Z) / np.sum(np.exp(Z))
 
@@ -37,8 +40,27 @@ def one_hot(Y):
     one_hot_Y = one_hot_Y.T # Flip the matrix
     return one_hot_Y
 
-def backward_propagation(Z1, A1, Z2, A2, W2, Y):
-    return "To be implemented"
+def backward_propagation(Z1, A1, Z2, A2, W2, X, Y):
+    m = Y.size
+    # ============ OUTPUT LAYER ============ #
+    one_hot_Y = one_hot(Y)
+    dZ2 = A2 - one_hot_Y # Compares the prediction with the actual answer
+    
+    # ============ ROLLBACK FROM OUTPUT TO HIDDEN LAYER ============ #
+    dW2 = (1 / m) * dZ2.dot(A1.T) # Reverses the chain rule in order to obtain the "influence" of each weight from the second layer
+    
+    #? Why is there a 2 in the sum? 
+    db2 = (1 / m) * np.sum(dZ2, 2) # Calculate the effect of each bias as equal, being the average of each error from the second layer
+    
+    # ============ HIDDEN LAYER ============ #
+    dZ1 = W2.T.dot(dZ2) * deriv_ReLU(Z1) # Goes back to layer 1, then multiplies with the ReLU derivative in order to take into account how strong was a neuron's activation fro mthe 1st layer
+
+    # ============ ROLLBACK FROM HIDDEN TO INPUT LAYER ============ #
+    dW1 = (1 / m) * dZ1.dot(X.T) # Reverses the chain rule in order to obtain the "influence" of each weight from the second layer
+    db1 = (1 / m) * np.sum(dZ1, 2) # Calculate the effect of each bias as equal, being the average of each error from the second layer
+
+
+    return dW1, db1, dW2, db2
       
 data = pd.read_csv('mnist_data/train.csv')
 
