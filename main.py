@@ -70,7 +70,24 @@ def update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, learning_rate):
 
     return W1, b1, W2, b2
 
+def gradient_descent(X, Y, iterations, learning_rate):
+    W1, b1, W2, b2 = init_params()
 
+    for i in range(iterations):
+        # forward prop
+        Z1, A1, Z2, A2 = forward_propagation(W1, b1, W2, b2, X)
+
+        # backwards prop
+        dW1, db1, dW2, db2 = backward_propagation(Z1, A1, Z2, Z2, W2, X, Y)
+
+        # update
+        W1, b1, W2, b2 = update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, learning_rate)
+
+        # print accuracy from time to time
+        if i % 50 == 0:
+            print("Iteration: ", i)
+
+    return W1, b1, W2, b2
       
 data = pd.read_csv('mnist_data/train.csv')
 
