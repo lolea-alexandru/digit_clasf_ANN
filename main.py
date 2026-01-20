@@ -70,6 +70,13 @@ def update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, learning_rate):
 
     return W1, b1, W2, b2
 
+def get_predictions(A2):
+    return np.argmax(A2, 0)
+
+def get_accuracy(predictions, Y):
+    print(predictions, Y)
+    return np.sum(predictions == Y) / Y.size
+
 def gradient_descent(X, Y, iterations, learning_rate):
     W1, b1, W2, b2 = init_params()
 
@@ -86,6 +93,7 @@ def gradient_descent(X, Y, iterations, learning_rate):
         # print accuracy from time to time
         if i % 50 == 0:
             print("Iteration: ", i)
+            print("Accuracy: ", get_accuracy(get_predictions(A2), Y))
 
     return W1, b1, W2, b2
       
@@ -107,5 +115,3 @@ X_dev = data_dev[1:n]
 data_train = data[1000:m].T
 Y_train = data_train[0]
 X_train = data_train[1:n]
-
-init_params()
