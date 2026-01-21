@@ -85,7 +85,8 @@ def get_predictions(A2):
     return np.argmax(A2, 0)
 
 def get_accuracy(predictions, Y):
-    print(predictions, Y)
+    print("Model predictions: ", predictions)
+    print("Labels: ", Y)
     return np.sum(predictions == Y) / Y.size
 
 def gradient_descent(X, Y, iterations, learning_rate):
@@ -103,11 +104,10 @@ def gradient_descent(X, Y, iterations, learning_rate):
 
         # print accuracy from time to time
         if i % 50 == 0:
-            print("Iteration: ", i)
-            print("Accuracy: ", get_accuracy(get_predictions(A2), Y))
-            print(f"Avg dW1 = {np.mean(np.abs(dW1))}")
-            print(f"Avg dW2 = {np.mean(np.abs(dW2))}")
-
+            print(" ==================== ITERATION #", i, " ====================")
+            print("Accuracy: ", get_accuracy(get_predictions(A2), Y), "\n")
+    
+    # Checks if there are "dead neurons" in the network
     if np.isnan(dW1).any():
         print("Warning: NaNs detected in W1!")
 
@@ -139,4 +139,5 @@ X_train = X_train / 255
 # Start gradient descent
 
 print("The shape of X_training is: ", np.shape(X_train))
-W1, b1, W2, b2 = gradient_descent(X_train, Y_train, 500, 0.1)
+W1, b1, W2, b2 = gradient_descent(X_train, Y_train, 501, 0.1)
+
