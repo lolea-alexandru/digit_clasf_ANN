@@ -10,3 +10,5 @@ I started this learning project because I want to know more about Machine Learni
 As mentioned in the repo description, the code is from the tutorial of Samson Zhang.
 Source: https://www.youtube.com/watch?v=w8yWXqWQYmU
 
+### Next steps
+1. Add an image display to show live how the model classifies it in real time
