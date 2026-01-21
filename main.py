@@ -7,8 +7,11 @@ from matplotlib import pyplot as plt
 def init_params():
     # Initialize the weights ("opinions") for the first layer of artificial neurons. The formula for the first layer of neurons will be Z = W * A + B
     # In this scenario, W must be 10 x 784 (since 10 was chosen as the number of neurons in the hidden layer) cause A = 784 x 1000 
-    W1 = np.random.rand(10, 784) - 0.5
+    W1 = (np.random.rand(10, 784) - 0.5) * 0.01 # Attempt to ressuscitate the Dying ReLU
     b1 = np.random.rand(10, 1) - 0.5
+
+    # print("The shape of W1 is: ", np.shape(W1))
+    # print("The shape of b is: ", np.shape(b1))
 
     # Initialize the weights and bias for the seceond layer of artificial neurons
     W2 = np.random.rand(10, 10) - 0.5
@@ -23,7 +26,9 @@ def deriv_ReLU(Z):
     return Z > 0
 
 def softmax(Z):
-    return np.exp(Z) / np.sum(np.exp(Z))
+    safe_Z = np.exp(Z - np.max(Z, axis=0, keepdims=True))
+
+    return safe_Z / np.sum(safe_Z, axis=0, keepdims=True)
 
 def forward_propagation(W1, b1, W2, b2, X):
     Z1 = W1.dot(X) + b1
@@ -50,24 +55,30 @@ def backward_propagation(Z1, A1, Z2, A2, W2, X, Y):
     dW2 = (1 / m) * dZ2.dot(A1.T) # Reverses the chain rule in order to obtain the "influence" of each weight from the second layer
     
     #? Why is there a 2 in the sum? 
-    db2 = (1 / m) * np.sum(dZ2, 2) # Calculate the effect of each bias as equal, being the average of each error from the second layer
+    db2 = (1 / m) * np.sum(dZ2, axis=1, keepdims=True) # Calculate the effect of each bias as equal, being the average of each error from the second layer
     
     # ============ HIDDEN LAYER ============ #
     dZ1 = W2.T.dot(dZ2) * deriv_ReLU(Z1) # Goes back to layer 1, then multiplies with the ReLU derivative in order to take into account how strong was a neuron's activation fro mthe 1st layer
 
     # ============ ROLLBACK FROM HIDDEN TO INPUT LAYER ============ #
     dW1 = (1 / m) * dZ1.dot(X.T) # Reverses the chain rule in order to obtain the "influence" of each weight from the second layer
-    db1 = (1 / m) * np.sum(dZ1, 2) # Calculate the effect of each bias as equal, being the average of each error from the second layer
+    db1 = (1 / m) * np.sum(dZ1, axis=1, keepdims=True) # Calculate the effect of each bias as equal, being the average of each error from the second layer
 
 
     return dW1, db1, dW2, db2
 
 def update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, learning_rate):
+    # print("The shape of b before update is: ", np.shape(b1))
+    # print("The shape of db1 before update is: ", np.shape(db1))
+    # print(b1)
+    # print(db1)
+
     W1 = W1 - learning_rate * dW1
     b1 = b1 - learning_rate * db1
     W2 = W2 - learning_rate * dW2
     b2 = b2 - learning_rate * db2
 
+    # print("The shape of b after update is: ", np.shape(b1))
     return W1, b1, W2, b2
 
 def get_predictions(A2):
@@ -83,9 +94,9 @@ def gradient_descent(X, Y, iterations, learning_rate):
     for i in range(iterations):
         # forward prop
         Z1, A1, Z2, A2 = forward_propagation(W1, b1, W2, b2, X)
-
+        
         # backwards prop
-        dW1, db1, dW2, db2 = backward_propagation(Z1, A1, Z2, Z2, W2, X, Y)
+        dW1, db1, dW2, db2 = backward_propagation(Z1, A1, Z2, A2, W2, X, Y)
 
         # update
         W1, b1, W2, b2 = update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, learning_rate)
@@ -94,6 +105,14 @@ def gradient_descent(X, Y, iterations, learning_rate):
         if i % 50 == 0:
             print("Iteration: ", i)
             print("Accuracy: ", get_accuracy(get_predictions(A2), Y))
+            print(f"Avg dW1 = {np.mean(np.abs(dW1))}")
+            print(f"Avg dW2 = {np.mean(np.abs(dW2))}")
+
+    if np.isnan(dW1).any():
+        print("Warning: NaNs detected in W1!")
+
+    if np.isnan(dW2).any():
+        print("Warning: NaNs detected in W2!")
 
     return W1, b1, W2, b2
       
@@ -117,4 +136,6 @@ Y_train = data_train[0]
 X_train = data_train[1:n]
 
 # Start gradient descent
-W1, b1, W2, b2 = gradient_descent(X_train, Y_train, 100, 0.1)
+
+print("The shape of X_training is: ", np.shape(X_train))
+W1, b1, W2, b2 = gradient_descent(X_train, Y_train, 500, 0.01)
