@@ -115,7 +115,15 @@ def gradient_descent(X, Y, iterations, learning_rate):
         print("Warning: NaNs detected in W2!")
 
     return W1, b1, W2, b2
-      
+
+def validate_data(W1, b1, W2, b2, X, Y):
+    # forward prop
+    Z1, A1, Z2, A2 = forward_propagation(W1, b1, W2, b2, X)
+
+    # print accuracy from time to time
+    print("Accuracy: ", get_accuracy(get_predictions(A2), Y), "\n")
+        
+
 data = pd.read_csv('mnist_data/train.csv')
 
 # Convert panda dataframe to numpy array
@@ -141,3 +149,4 @@ X_train = X_train / 255
 print("The shape of X_training is: ", np.shape(X_train))
 W1, b1, W2, b2 = gradient_descent(X_train, Y_train, 501, 0.1)
 
+validate_data(W1, b1, W2, b2, X_dev, Y_dev)
